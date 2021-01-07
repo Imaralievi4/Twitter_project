@@ -1,14 +1,14 @@
-{% extends 'users/base_blog.html' %}
+{% extends 'blog/base_blog.html' %}
 
 {% block title %}
-    Edit Post "{{ post.title }}" - {{ block.super }}
+    Edit tag "{{ tag.title|title }}" - {{ block.super }}
 {% endblock %}
 
 {% block content %}
 
-    <form class="" action="{{ post.get_update_url}}" method="post">
-
+    <form action="{{ tag.get_update_url }}" method="post">
         {% csrf_token %}
+
         {% for field in form %}
             <div class="form-group">
                 {% if field.errors %}
@@ -16,12 +16,15 @@
                         {{ field.errors }}
                     </div>
                 {% endif %}
-                {{ field.label }}
-                {{ field}}
 
+                {{ field.label }}
+                {{ field }}
             </div>
+
         {% endfor %}
-        <button type="submit" name="button" class="btn btn-primary">Update post</button>
+
+
+        <button type="submit" class="btn btn-primary">Update Tag</button>
     </form>
 
 {% endblock %}

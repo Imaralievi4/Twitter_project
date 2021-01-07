@@ -14,10 +14,11 @@ class ObjectDetailMixin:
         return render(request, self.template, context={self.model.__name__.lower(): obj, 'admin-object': obj, 'detail': True})    
 
 
+
 class ObjectCreateMixin:
-    
     model_form = None
     template = None
+
 
     def get(self, request):
         form = self.model_form()
@@ -32,8 +33,8 @@ class ObjectCreateMixin:
         return render(request, self.template, context={'form': bound_form})
 
 
+
 class ObjectUpdateMixin:
-    
     model = None
     model_form = None
     template = None
@@ -54,7 +55,6 @@ class ObjectUpdateMixin:
 
     
 class ObjectDeleteMixin:
-    
     model = None
     template = None
     redirect_url = None

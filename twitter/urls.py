@@ -23,5 +23,5 @@ from .views import redirect_blog
 urlpatterns = [
     path('', redirect_blog),
     path('admin/', admin.site.urls),
-    path('users/', include('users.urls')),
+    path('blog/', include('blog.urls')),
 ]
