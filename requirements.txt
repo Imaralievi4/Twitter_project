@@ -1,3 +1,4 @@
 django==2.2.8
 pillow
 python-decouple
+django-crispy-forms

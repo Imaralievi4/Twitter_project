@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
-from django.views.generic import View
+from django.views.generic import View, ListView
 
 
 from .models import Post, Tag
@@ -16,15 +16,16 @@ from django.db.models import Q
 
 
 def posts_list(request):
-    search_query = request.GET.get('search', '')
+    # search_query = request.GET.get('search', '')
 
-    if search_query:
-        posts = Post.objects.filter(Q(title__icontains=search_query) | Q(body__icontains=search_query))
-    else:
-        posts = Post.objects.all()
+    # if search_query:
+    #     posts = Post.objects.filter(Q(title__icontains=search_query) | Q(body__icontains=search_query))
+    # else:
+    #     posts = Post.objects.all()
 
-    paginator = Paginator(posts, 10)
-    
+    posts = Post.objects.all()
+
+    paginator = Paginator(posts, 1)
 
     page_number = request.GET.get('page', 1)
     page = paginator.get_page(page_number)
@@ -75,6 +76,50 @@ class PostDelete(LoginRequiredMixin, ObjectDeleteMixin, View):
     redirect_url = 'posts_list_url'
     raise_exception = True
 
+
+class UserPostListView(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = 'blog/user_posts.html'
+    context_object_name = 'posts'
+
+
+    def visible_user(self):
+        return get_object_or_404(User, username=self.kwargs.get('username'))
+
+    def get_context_data(self, **kwargs):
+        visible_user = self.visible_user()
+        logged_user = self.request.user
+        print(logged_user.username == '', file=sys.stderr)
+
+        if logged_user.username == '' or logged_user is None:
+            can_follow = False
+        else:
+            can_follow = (Follow.objects.filter(user=logged_user,
+                                                follow_user=visible_user).count() == 0)
+        data = super().get_context_data(**kwargs)
+
+        data['user_profile'] = visible_user
+        data['can_follow'] = can_follow
+        return data
+
+    def get_queryset(self):
+        user = self.visible_user()
+        return Post.objects.filter(author=user).order_by('-date_posted')
+
+    # def post(self, request, *args, **kwargs):
+    #     if request.user.id is not None:
+    #         follows_between = Follow.objects.filter(user=request.user,
+    #                                                 follow_user=self.visible_user())
+
+    #         if 'follow' in request.POST:
+    #                 new_relation = Follow(user=request.user, follow_user=self.visible_user())
+    #                 if follows_between.count() == 0:
+    #                     new_relation.save()
+    #         elif 'unfollow' in request.POST:
+    #                 if follows_between.count() > 0:
+    #                     follows_between.delete()
+
+    #     return self.get(self, request, *args, **kwargs)
 
 
 class TagDetail(ObjectDetailMixin, View):
