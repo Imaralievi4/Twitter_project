@@ -1,8 +1,11 @@
 from django import forms
-from .models import Tag, Post
 from django.core.exceptions import ValidationError
 
+from .models import Tag, Post
+
+
 class TagForm(forms.ModelForm):
+    
     class Meta:
         model = Tag
         fields = ['title', 'slug']
@@ -11,8 +14,6 @@ class TagForm(forms.ModelForm):
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'slug': forms.TextInput(attrs={'class': 'form-control'}),
         }
-
-
 
     def clean_slug(self):
         new_slug = self.cleaned_data['slug'].lower()
@@ -23,7 +24,9 @@ class TagForm(forms.ModelForm):
             raise ValidationError('Slug must be unique. We have "{}" slug already'.format(new_slug))
         return new_slug
 
+
 class PostForm(forms.ModelForm):
+    
     class Meta:
         model = Post 
         fields = ['title', 'slug', 'body', 'tags']
@@ -41,7 +44,3 @@ class PostForm(forms.ModelForm):
         if new_slug == 'create':
             raise ValidationError('Slug may not be "Create"')
         return new_slug
-
-
-
-

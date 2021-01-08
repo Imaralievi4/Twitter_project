@@ -1,6 +1,5 @@
-from django.shortcuts import render
-from django.shortcuts import redirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import View
 
 from .models import *
 
@@ -14,11 +13,9 @@ class ObjectDetailMixin:
         return render(request, self.template, context={self.model.__name__.lower(): obj, 'admin-object': obj, 'detail': True})    
 
 
-
 class ObjectCreateMixin:
     model_form = None
     template = None
-
 
     def get(self, request):
         form = self.model_form()
