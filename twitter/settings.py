@@ -42,6 +42,8 @@ INSTALLED_APPS = [
 
     'users.apps.UsersConfig',
     'blog',
+    'account',
+    'crispy_forms',
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
@@ -128,3 +130,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+
+MEDIA_URL = 'media/'
+
+LOGIN_REDIRECT_URL =  '/'
