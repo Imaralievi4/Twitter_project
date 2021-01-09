@@ -140,6 +140,7 @@ LOGOUT_REDIRECT_URL = 'signup'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
