@@ -5,6 +5,9 @@ from django.urls import reverse_lazy
 
 from .forms import CustomUserCreationForm
 from .utils import send_activation_email
+# from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+# from django.contrib.auth.models import User
 
 
 class RegisterView(FormView):
@@ -21,6 +24,37 @@ class RegisterView(FormView):
     def form_invalid(self, form):
         return super().form_invalid(form)
 
+
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        uform = UserUpdateForm(request.POST, instance=request.user)
+        pform = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+
+        if uform.is_valid() and pform.is_valid():
+            uform.save()
+            pform.save()
+            messages.success(request, f'Account has been updated.')
+            return redirect('profile')
+    else:
+        uform = UserUpdateForm(instance=request.user)
+        pform = ProfileUpdateForm(instance=request.user.profile)
+
+    return render(request, 'account/profile.html', {'uform': uform, 'pform': pform})
+
+
+
+@login_required
+def SearchView(request):
+    if request.method == 'POST':
+        kerko = request.POST.get('search')
+        print(kerko)
+        results = User.objects.filter(username__contains=kerko)
+        context = {
+            'results':results
+        }
+        return render(request, 'account/search_result.html', context)
 
 class ActivationView(View):
     """Activation user by email"""

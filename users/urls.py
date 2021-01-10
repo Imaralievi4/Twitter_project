@@ -1,6 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 
+from users import views as users_views
 from .views import RegisterView, ActivationView
 
 urlpatterns = [
@@ -14,4 +15,6 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     path('activate/<uuid:activation_code>/', ActivationView.as_view(), name='activation'),
+    path('profile/', users_views.profile, name='profile'),
+    path('search/', users_views.SearchView, name='search'),
 ]
