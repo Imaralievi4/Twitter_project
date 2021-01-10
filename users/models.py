@@ -4,7 +4,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models, transaction
 from django.utils import timezone
-
+from PIL import Image
 
 class MyUserManager(models.Manager):
     def _create_user(self, username, email, password, **extra_fields):
@@ -39,6 +39,7 @@ class MyUserManager(models.Manager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    
     username = models.CharField(max_length=100, unique=True)
     email = models.EmailField(max_length=100, unique=True)
     first_name = models.CharField(max_length=50, default='')
@@ -65,3 +66,31 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.first_name
+
+    # def __str__(self):
+    #     return f'{self.user.username} Profile'
+
+    @property
+    def followers(self):
+        return Follow.objects.filter(follow_user=self.user).count()
+
+    @property
+    def following(self):
+        return Follow.objects.filter(user=self.user).count()
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super().save()
+
+        img = Image.open(self.Image.path)
+        if img.height > 300 or img.width > 300:
+            output_size = (300, 300)
+            img.thumbnail(output_size)
+            img.save(self.Image.path)
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(CustomUser, related_name='user', on_delete=models.CASCADE)
+    follow_user = models.ForeignKey(CustomUser, related_name='follow_user', on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
+
