@@ -1,9 +1,11 @@
-from django.shortcuts import render, render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.views.generic import FormView, View
 from django.urls import reverse_lazy
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, ProfileUpdateForm
 from .utils import send_activation_email
 # from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -26,6 +28,16 @@ class RegisterView(FormView):
 
 
 
+class ActivationView(View):
+    """Activation user by email"""
+    def get(self, request, activation_code):
+        user = get_object_or_404(get_user_model(), activation_code=activation_code)
+        user.is_active = True
+        user.activation_code = ''
+        user.save()
+        return render(request, 'account/activation.html')
+
+
 @login_required
 def profile(request):
     if request.method == 'POST':
@@ -44,7 +56,6 @@ def profile(request):
     return render(request, 'account/profile.html', {'uform': uform, 'pform': pform})
 
 
-
 @login_required
 def SearchView(request):
     if request.method == 'POST':
@@ -55,12 +66,3 @@ def SearchView(request):
             'results':results
         }
         return render(request, 'account/search_result.html', context)
-
-class ActivationView(View):
-    """Activation user by email"""
-    def get(self, request, activation_code):
-        user = get_object_or_404(get_user_model(), activation_code=activation_code)
-        user.is_active = True
-        user.activation_code = ''
-        user.save()
-        return render(request, 'account/activation.html')

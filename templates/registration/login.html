@@ -1,23 +1,25 @@
 {% extends "blog/base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-<div class="container">
-    <form method="POST" class="col-12 col-md-6 pl-3 pr-3 pl-md-0 pr-md-0">
+
+<div>
+    <form action="{% url 'login' %}" method="post">
         {% csrf_token %}
-        <fieldset class="form-group">
-            <legend class="mb-3 white-important">
-                Login
-            </legend>
-            {{ form | crispy }}
-        </fieldset>
-        <div class="form-group">
-            <button class="btn btn-outline-primary" type="submit">Login</button>
-        </div>
+        {{ form.as_p }}
+        <button formaction="{% url 'posts_list_url' %}" class="btn btn-outline-primary">Login</button>
     </form>
-    <div class="pt-3">
-        <small class="text-muted">
-            Do you need an account? <a class="ml-2" href="{% url 'signup' %}">Sign up</a>
-        </small>
+    
+    {% for message in messages %}
+        <p id="messages">{{message}}</p>
+    {% endfor %}
+    <div class="mt-4">
+    <div class="d-flex justify-content-center links">
+        Don't have an account? <a href="{% url 'signup' %}" class="ml-2">Registration</a>
+    </div>
+    <div class="d-flex justify-content-center links">
+        Forgot password? <a href="{% url 'password_reset' %}" class="ml-2">Reset password</a>
+
     </div>
 </div>
+
 {% endblock content %}
