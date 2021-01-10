@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from users import views as users_views
 
+from users import views as users_views
 from .views import RegisterView, ActivationView
 
 urlpatterns = [

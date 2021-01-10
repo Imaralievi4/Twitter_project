@@ -7,6 +7,9 @@ from django.contrib.auth.decorators import login_required
 
 from .forms import CustomUserCreationForm, ProfileUpdateForm
 from .utils import send_activation_email
+# from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+# from django.contrib.auth.models import User
 
 
 class RegisterView(FormView):
@@ -22,6 +25,7 @@ class RegisterView(FormView):
 
     def form_invalid(self, form):
         return super().form_invalid(form)
+
 
 
 class ActivationView(View):
