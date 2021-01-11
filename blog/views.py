@@ -6,126 +6,131 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.db.models import Count  
 
-from .models import Post, Tag
+from .models import Post
 from .utils import *
-from .forms import TagForm, PostForm
+from .forms import PostForm
 # from users.models import Follow, CustomUser
 
 def posts_list(request):
+    search_query = request.GET.get('search', '')
 
-#     posts = Post.objects.all()
+    if search_query:
+        posts = Post.objects.filter(Q(title__icontains=search_query) | Q(body__icontains=search_query))
+    else:
+        posts = Post.objects.all()
 
-#     paginator = Paginator(posts, 1)
+    posts = Post.objects.all()
 
-#     page_number = request.GET.get('page', 1)
-#     page = paginator.get_page(page_number)
+    paginator = Paginator(posts, 3)
 
-#     is_paginated = page.has_other_pages()
+    page_number = request.GET.get('page', 1)
+    page = paginator.get_page(page_number)
 
-#     if page.has_previous():
-#         prev_url = '?page={}'.format(page.previous_page_number())
-#     else:
-#         prev_url = ''
-#     if page.has_next():
-#         next_url = '?page={}'.format(page.next_page_number())
-#     else:
-#         next_url = ''
+    is_paginated = page.has_other_pages()
+
+    if page.has_previous():
+        prev_url = '?page={}'.format(page.previous_page_number())
+    else:
+        prev_url = ''
+
+    if page.has_next():
+        next_url = '?page={}'.format(page.next_page_number())
+    else:
+        next_url = ''
     
-#     context = {
-#         'page_object': page,
-#         'is_paginated': is_paginated,
-#         'next_url': next_url, 
-#         'prev_url': prev_url
-#     }
+    context = {
+        'page_object': page,
+        'is_paginated': is_paginated,
+        'next_url': next_url, 
+        'prev_url': prev_url
+    }
 
-#     return render(request, 'blog/index.html', context=context)
-
-# def is_users(post_user, logged_user):
-#     return post_user == logged_user
-
-    return render(request, 'blog/index.html')
+    return render(request, 'blog/index.html', context=context)
 
 # def is_users(post_user, logged_user):
 #     return post_user == logged_user
+
+#     return render(request, 'blog/index.html')
+
 
 PAGINATION_COUNT = 3
 
 
 
-class PostListView(LoginRequiredMixin, ListView):
-    model = Post
-    template = 'blog/index.html'
-    context_object_name = 'posts'
-    ordering = ['-date_posted']
-    paginate_by = PAGINATION_COUNT
+# class PostListView(LoginRequiredMixin, ListView):
+#     model = Post
+#     template = 'blog/index.html'
+#     context_object_name = 'posts'
+#     ordering = ['-date_posted']
+#     paginate_by = PAGINATION_COUNT
 
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
 
-        all_users = []
-        data_counter = Post.objects.values('author')\
-            .annotate(author_count=Count('author'))\
-            .order_by('-author_count')[:6]
+#         all_users = []
+#         data_counter = Post.objects.values('author')\
+#             .annotate(author_count=Count('author'))\
+#             .order_by('-author_count')[:6]
 
-        for aux in data_counter:
-            all_users.append(User.objects.filter(pk=aux['author']).first())
+#         for aux in data_counter:
+#             all_users.append(User.objects.filter(pk=aux['author']).first())
         
-        data['all_users'] = all_users
-        print(all_users, file=sys.stderr)
-        return data
+#         data['all_users'] = all_users
+#         print(all_users, file=sys.stderr)
+#         return data
 
-    # def get_queryset(self):
-    #     user = self.request.user
-    #     qs = Follow.objects.filter(user=user)
-    #     follows = [user]
-    #     for obj in qs:
-    #         follows.append(obj.follow_user)
-    #     return Post.objects.filter(author__in=follows).order_by('-date_posted')
-
-
-class PostDetail(ObjectDetailMixin, View):
-    model = Post
-    template = 'blog/post_detail.html'
-    context_object_name = 'post'
-
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        comments_connected = Comment.objects.filter(post_connected=self.get_object()).order_by('-date_posted')
-        data['comments'] = comments_connected
-        data['form'] = NewCommentForm(instance=self.request.user)
-        return data
-
-    def post(self, request, *args, **kwargs):
-        new_comment = Comment(content=request.POST.get('content'),
-                              author=self.request.user,
-                              post_connected=self.get_object())
-        new_comment.save()
-
-        return self.get(self, request, *args, **kwargs)
+#     # def get_queryset(self):
+#     #     user = self.request.user
+#     #     qs = Follow.objects.filter(user=user)
+#     #     follows = [user]
+#     #     for obj in qs:
+#     #         follows.append(obj.follow_user)
+#     #     return Post.objects.filter(author__in=follows).order_by('-date_posted')
 
 
-class PostCreate(LoginRequiredMixin, ObjectCreateMixin, View):
-    model_form = PostForm
-    template = 'blog/post_create_form.html'
-    raise_exception = True
-    fields = ['content']
-    success_url = '/'
+# class PostDetail(ObjectDetailMixin, View):
+#     model = Post
+#     template = 'blog/post_detail.html'
+#     context_object_name = 'post'
+
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
+#         comments_connected = Comment.objects.filter(post_connected=self.get_object()).order_by('-date_posted')
+#         data['comments'] = comments_connected
+#         data['form'] = NewCommentForm(instance=self.request.user)
+#         return data
+
+#     def post(self, request, *args, **kwargs):
+#         new_comment = Comment(content=request.POST.get('content'),
+#                               author=self.request.user,
+#                               post_connected=self.get_object())
+#         new_comment.save()
+
+#         return self.get(self, request, *args, **kwargs)
 
 
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
+# class PostCreate(LoginRequiredMixin, ObjectCreateMixin, View):
+#     model_form = PostForm
+#     template = 'blog/post_create_form.html'
+#     raise_exception = True
+#     fields = ['content']
+#     success_url = '/'
 
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        data['tag_line'] = 'Add a new post'
-        return data
+
+#     def form_valid(self, form):
+#         form.instance.author = self.request.user
+#         return super().form_valid(form)
+
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
+#         data['tag_line'] = 'Add a new post'
+#         return data
 
 class PostUpdate(LoginRequiredMixin, ObjectUpdateMixin, View):
     model = Post
     model_form = PostForm
     fields = ['content']
-    template = 'blog/post_create_form.html'
+    template = 'blog/post_update_form.html'
     raise_exception = True
     success_url = '/'
 
@@ -142,14 +147,14 @@ class PostUpdate(LoginRequiredMixin, ObjectUpdateMixin, View):
         return data
 
 
-class PostDelete(LoginRequiredMixin, ObjectDeleteMixin, View):
-    model =Post
-    template = 'blog/post_delete_form.html'
-    redirect_url = 'posts_list_url'
-    raise_exception = True
+# class PostDelete(LoginRequiredMixin, ObjectDeleteMixin, View):
+#     model =Post
+#     template = 'blog/post_delete_form.html'
+#     redirect_url = 'posts_list_url'
+#     raise_exception = True
 
-    def test_func(self):
-        return is_users(self.get_object().author, self.request.user)
+#     def test_func(self):
+#         return is_users(self.get_object().author, self.request.user)
 
 
 class UserPostListView(LoginRequiredMixin, ListView):
@@ -182,50 +187,22 @@ class UserPostListView(LoginRequiredMixin, ListView):
         user = self.visible_user()
         return Post.objects.filter(author=user).order_by('-date_posted')
 
-    # def post(self, request, *args, **kwargs):
-    #     if request.user.id is not None:
-    #         follows_between = Follow.objects.filter(user=request.user,
-    #                                                 follow_user=self.visible_user())
+    def post(self, request, *args, **kwargs):
+        if request.user.id is not None:
+            follows_between = Follow.objects.filter(user=request.user,
+                                                    follow_user=self.visible_user())
 
-    #         if 'follow' in request.POST:
-    #                 new_relation = Follow(user=request.user, follow_user=self.visible_user())
-    #                 if follows_between.count() == 0:
-    #                     new_relation.save()
-    #         elif 'unfollow' in request.POST:
-    #                 if follows_between.count() > 0:
-    #                     follows_between.delete()
+            if 'follow' in request.POST:
+                    new_relation = Follow(user=request.user, follow_user=self.visible_user())
+                    if follows_between.count() == 0:
+                        new_relation.save()
+            elif 'unfollow' in request.POST:
+                    if follows_between.count() > 0:
+                        follows_between.delete()
 
-    #     return self.get(self, request, *args, **kwargs)
-
-
-class TagDetail(ObjectDetailMixin, View):
-    model = Tag
-    template = 'blog/tag_detail.html'
+        return self.get(self, request, *args, **kwargs)
 
 
-class TagCreate(LoginRequiredMixin, ObjectCreateMixin, View):
-    model_form = TagForm 
-    template = 'blog/tag_create.html'
-    raise_exception = True
-
-
-class TagUpdate(LoginRequiredMixin, ObjectUpdateMixin, View):
-    model = Tag
-    model_form = TagForm
-    template = 'blog/tag_update_form.html'
-    raise_exception = True
-
-
-class TagDelete(LoginRequiredMixin, ObjectDeleteMixin, View):
-    model = Tag
-    template = 'blog/tag_delete_form.html'
-    redirect_url = 'tags_list_url'
-    raise_exception = True
-
-
-def tags_list(request):
-    tags = Tag.objects.all()
-    return render(request, 'blog/tags_list.html', context={'tags': tags})
 
 
 # class FollowsListView(ListView):
@@ -262,3 +239,30 @@ def tags_list(request):
 #         data = super().get_context_data(**kwargs)
 #         data['follow'] = 'followers'
 #         return data
+
+class PostDetail(ObjectDetailMixin, View):
+    model = Post
+    template = 'blog/post_detail.html'
+    
+
+
+class PostCreate(LoginRequiredMixin, ObjectCreateMixin, View):
+    model_form = PostForm
+    template = 'blog/post_create_form.html'
+    raise_exception = True
+
+
+# class PostUpdate(LoginRequiredMixin, ObjectUpdateMixin, View):
+#     model = Post
+#     model_form = PostForm
+#     template = 'blog/post_update_form.html'
+#     raise_exception = True
+
+
+
+class PostDelete(LoginRequiredMixin, ObjectDeleteMixin, View):
+    model =Post
+    template = 'blog/post_delete_form.html'
+    redirect_url = 'posts_list_url'
+    raise_exception = True
+

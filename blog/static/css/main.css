@@ -4,11 +4,11 @@
 
 
 body {
-  background: #15202b;
+  background: #2e4a66;
   color: var(--muted-color);
   margin-top: 5rem;
 }
-
+/* #15202B */
 h1, h2, h3, h4, h5, h6 {
   color: var(--muted-color);
 }
@@ -18,7 +18,7 @@ ul {
 }
 
 .bg-steel {
-  background-color: #15202b;
+  background-color: #5685c2;
 }
 
 .site-header .navbar-nav .nav-link {
@@ -101,7 +101,7 @@ article {
     color: white !important;
     padding: 12px 80px 12px 80px;
     font-weight: bold;
-    background-color: #1da1f2;
+    background-color: #36405e;
     border:0;
     border-radius: 25px;
 }
