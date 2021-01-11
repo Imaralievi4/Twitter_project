@@ -1,5 +1,8 @@
 {% extends "blog/base.html" %}
 {% load crispy_forms_tags %}
+{% block title %}
+    Create Post - {{ block.super }}
+{% endblock %}
 {% block content %}
 <div class="container">
     <h3 class="white-important">

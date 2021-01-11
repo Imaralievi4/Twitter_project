@@ -24,7 +24,7 @@ body {
 .search-container {
     width: 300px;
     height: 45px;
-    background-color: #253341;
+    background-color: #2d3741;
     border-radius: 30px;
     display: flex;
 }
@@ -34,7 +34,7 @@ body {
     font-size: 20px;
     background-color: transparent;
     border: 0;
-    color: white;
+    color: rgb(212, 209, 209);
 }
 
 .search-container .search {
@@ -80,7 +80,7 @@ body {
 
 .store-address {
 	font-size: 21px;
-	color: #514C4C;
+	color: #b4b4b4;
 	margin-top: 30px;
 }
 
@@ -97,7 +97,7 @@ body {
 .store-number{
 	width: 30px;
     height: 30px;
-    background-color: #454e53;
+    background-color: #bebebe;
     color: #B5ADAD;
     border-radius: 50%;
     font-size: 12px;
@@ -160,7 +160,7 @@ body {
 .store-info-address .circle, .store-info-phone .circle{
 	width: 30px;
     height: 30px;
-    background: #1985A1;
+    background: #87dbf0;
     color: white;
     border-radius: 50%;
     display: flex;
@@ -184,7 +184,7 @@ body {
 }
 
 .store-container-background:hover{
-	background-color: rgb(180, 180, 180);
+	background-color: rgb(83, 80, 80);
     flex-grow: 1;
     /* margin: 8px; */
     border-radius: 18px;
@@ -192,7 +192,7 @@ body {
 }
 
 .search-result-profile{
-    background-color: #253341;
+    background-color: #afafaf;
     border-radius: 20px;
     padding: 15px;
     margin: 9px;
